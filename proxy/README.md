@@ -1,4 +1,4 @@
-# Building of a proxy server
+# Building a proxy server
 
   - Ubuntu 16.04
   - Go 1.10.3
@@ -13,22 +13,26 @@ go run main.go -key ../../certs/localhost.key -pem ../../certs/localhost.pem  -p
 go run main.go 
 panic: Get https://google.com: proxyconnect tcp: x509: certificate signed by unknown authority
 
-  Means the OS is rejecting self-signed certificate:
+  This means the OS is rejecting self-signed certificate. Please look at the Certificates section.
 
-    Solution: Create a custom OpenSSL config that will be used when creating the certificates
+## Run a client
 
-## Run the client
+### Run a Go client
 
 go run main.go certs.go [--insecure=true] [--server-host=localhost:9999] [--url=https://monzo.com] [--cert=../../localhost.pem]
 
 go build -o client main.go certs.go
 ./client  [--insecure=true] [--server-host=localhost:9999] [--url=https://monzo.com] [--cert=../../localhost.pem]
 
-## curl
+## Use curl
 
 /usr/local/bin/curl -Lv --proxy https://localhost:8888 --proxy-cacert path-to-self-signed-cert  (localhost.pem etc)  https://docs.docker.com
 
 ### Issues
+
+curl: option --proxy-cacert: is unknown
+                or
+curl is not compiles with SSL support
 
     - Make sure you have curl built with HTTPS-proxy support (https://daniel.haxx.se/blog/2016/11/26/https-proxy-with-curl/):
         - download the right curl version (tar.gz) 
@@ -40,19 +44,18 @@ go build -o client main.go certs.go
 
 ## Certificates
 
-download (tar.gz) curl version curl 7.60.0
-install libssl-dev package
-enable ssl (and ssh) during curl build:
-   ./configure --enable-ssl --enable-libssh2
+### Compile curl if required:
 
-create certificates:
+    download (tar.gz) curl version curl 7.60.0
+    install libssl-dev package
+    enable ssl (and ssh) during curl build:
+       ./configure --enable-ssl --enable-libssh2
 
-create openssh config to make the OS accept self-signed certificates (for running curl):
+### Create certificates:
 
-a) openssl config for custom domain (localhost etc)
-      https://fabianlee.org/2018/02/17/ubuntu-creating-a-self-signed-san-certificate-using-openssl/
-
-b) script to create the key pair (certs/create_certs.sh):
+a) script to create the key pair (certs/selfsigned.sh):
+      The script creates the keys and certificate for "localhost" domain. There is also selfsignedFQDN.sh for
+      creating a self-seigned certificate for the server domain (hostname -f)
 
 
 ## Credits
