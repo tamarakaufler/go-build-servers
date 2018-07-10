@@ -62,6 +62,12 @@ a) script to create the key pair (certs/selfsigned.sh):
 
 b) For the Operating System to accept the CA certificate (localhost.pem) when running the Go client going through the proxy, the client code needs to add the created cert to the CA certificate pool.
 
+  Another way to make the OS accept the self-signed cert is to create a custom openssl config file (localhost.cnf) and use the certs.orig/createCertsOpenSSLConf.sh script
+  OR
+  use the certs.orig/createCertsSAN.sh script.
+
+  This should remove the need to complicate the client code with working with the root certificates pool. Neither of these two methods worked for me.
+
 ## Credits
 
 https://medium.com/@mlowicki/http-s-proxy-in-golang-in-less-than-100-lines-of-code-6a51c2f2c38c
