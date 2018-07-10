@@ -3,8 +3,11 @@
   - Ubuntu 16.04
   - Go 1.10.3
   - curl 7.60.0 (x86_64-pc-linux-gnu) libcurl/7.60.0 OpenSSL/1.0.2g zlib/1.2.8 libssh2/1.5.0 (build locally to allow support for proxies, not available in curl from the Ubuntu package repository)
+  
+  The implementation shows how to build a proxy server and a client going through the proxy to retrieve a URL using Go. The project helped me get more insight into the proxying details. I also came across some gotchas, which provided even more insight :) 
+  
 
-## Run the proxy server
+## Running a proxy server
 
 go run main.go -key ../../certs/localhost.key -pem ../../certs/localhost.pem  -proto https
 
@@ -15,7 +18,7 @@ panic: Get https://google.com: proxyconnect tcp: x509: certificate signed by unk
 
   This means the OS is rejecting self-signed certificate. Please look at the Certificates section.
 
-## Run a client
+## Running a client
 
 ### Run a Go client
 
