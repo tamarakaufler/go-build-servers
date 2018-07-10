@@ -57,6 +57,7 @@ a) script to create the key pair (certs/selfsigned.sh):
       The script creates the keys and certificate for "localhost" domain. There is also selfsignedFQDN.sh for
       creating a self-seigned certificate for the server domain (hostname -f)
 
+b) For the Operating System to accept the CA certificate (localhost.pem) when running the Go client going through the proxy, the client code needs to add the created cert to the CA certificate pool.
 
 ## Credits
 
