@@ -12,3 +12,5 @@ This repo is intended to be a a collection of implementations of different purpo
       
       The client ensures the OS (Operating System) accepts the self-signed cert.
       
+# Credits
+https://medium.com/@mlowicki/http-s-proxy-in-golang-in-less-than-100-lines-of-code-6a51c2f2c38c https://forfuncsake.github.io/post/2017/08/trust-extra-ca-cert-in-go-app/
