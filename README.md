@@ -10,5 +10,5 @@ This repo is intended to be a a collection of implementations of different purpo
       
       A script for creating a self-signed certificate.
       
-      The client ensure the OS (Operating System) accepts the self-signed cert.
+      The client ensures the OS (Operating System) accepts the self-signed cert.
       
