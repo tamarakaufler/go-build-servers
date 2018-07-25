@@ -1,4 +1,4 @@
-# Building a proxy server
+# Building a TCP proxy server
 
   - Ubuntu 16.04
   - Go 1.10.3
