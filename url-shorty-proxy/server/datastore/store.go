@@ -60,34 +60,32 @@ func DBConnection() (*gorm.DB, error) {
 	}
 
 	db.LogMode(true)
-	db.AutoMigrate(&Abbreviation{})
+	db.AutoMigrate(&Shorty{})
 
 	return db, err
 }
 
-func (st *PSQLStore) Create(a Abbreviation) error {
+func (st *PSQLStore) Create(a Shorty) error {
 	err := st.db.Create(a).Error
 	return err
 }
 
 func (st *PSQLStore) Delete(s string) error {
-	var abbr Abbreviation
+	var abbr Shorty
 	err := st.db.Where("shorty=?", s).Delete(&abbr).Error
 	return err
 }
 
-func (st *PSQLStore) Get(id uint) (*Abbreviation, error) {
-	var abbr Abbreviation
+func (st *PSQLStore) Get(id uint) (*Shorty, error) {
+	var abbr Shorty
 	abbr.Id = id
 
 	err := st.db.First(&abbr).Error
 	return &abbr, err
 }
 
-func (st *PSQLStore) GetByAbbr(shorty string) (*Abbreviation, error) {
-	var abbr Abbreviation
-
-	//err := st.db.Where("shorty = ?", shorty).First(abbr).Error
+func (st *PSQLStore) GetByAbbr(shorty string) (*Shorty, error) {
+	var abbr Shorty
 
 	err := st.db.First(&abbr, "shorty = ?", shorty).Error
 

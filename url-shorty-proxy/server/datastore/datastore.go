@@ -3,13 +3,13 @@ package datastore
 import "github.com/jinzhu/gorm"
 
 type Datastore interface {
-	Create(Abbreviation) error
+	Create(Shorty) error
 	Delete(shortURL string) error
-	Get(id int) (*Abbreviation, error)
-	GetByAbbr(shortURL string) (*Abbreviation, error)
+	Get(id int) (*Shorty, error)
+	GetByAbbr(shortURL string) (*Shorty, error)
 }
 
-type Abbreviation struct {
+type Shorty struct {
 	gorm.Model
 	Id          uint
 	Shorty, Url string
