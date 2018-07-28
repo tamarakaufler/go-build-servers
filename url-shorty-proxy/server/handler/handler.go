@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -27,9 +26,6 @@ func NewDatastore() (*Datastore, error) {
 }
 
 func (d *Datastore) MappingHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println(">>> In MappingHandler")
-
-	fmt.Printf("%#v\n", r.URL)
 
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -38,23 +34,16 @@ func (d *Datastore) MappingHandler(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	shorty := vars["shorty"]
-	log.Printf("shorty: %s\n", shorty)
 
 	abbr, err := d.Store.Conn.GetByAbbr(shorty)
 	if err != nil {
 		log.Printf("GetByAbb: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		NoopHandler(w, r)
 		return
 	}
 
-	log.Printf("abbr: %v\n", abbr)
+	log.Printf("abbr: %#v\n", abbr)
 	log.Printf("shorty: %s => url: %s\n", shorty, abbr.Url)
-
-	// if shorty == "ggl.c" {
-	// 	url = "https://www.google.com"
-	// } else {
-	// 	url = "https://amazon.co.uk"
-	// }
 
 	http.Redirect(w, r, abbr.Url, http.StatusMovedPermanently)
 }
@@ -68,8 +57,6 @@ func NoopHandler(w http.ResponseWriter, r *http.Request) {
 		Status:  http.StatusText(http.StatusOK),
 		Content: "Nothing to do here",
 	}
-
-	log.Printf("%v\n", resp)
 
 	err := json.NewEncoder(w).Encode(resp)
 	if err != nil {

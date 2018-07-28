@@ -59,9 +59,14 @@ func DBConnection() (*gorm.DB, error) {
 		return nil, err
 	}
 
+	// Logs, among other things raw SQL statements
 	db.LogMode(true)
+
+	// Creates a table based on the Shorty struct. Also adds created, updated, deleted
+	// timestamps
 	db.AutoMigrate(&Shorty{})
 
+	// Ensures uniqueness of the shorty column
 	db.Model(&Shorty{}).AddUniqueIndex("idx_shorty_shorty", "shorty")
 
 	return db, err
