@@ -59,7 +59,7 @@ func DBConnection() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	// Logs, among other things raw SQL statements
+	// Logs, among other things, raw SQL statements
 	db.LogMode(true)
 
 	// Creates a table based on the Shorty struct. Also adds created, updated, deleted
@@ -78,8 +78,13 @@ func (st *PSQLStore) Create(a Shorty) error {
 }
 
 func (st *PSQLStore) Delete(s string) error {
-	var abbr Shorty
-	err := st.db.Where("shorty=?", s).Delete(&abbr).Error
+	var abbr *Shorty
+
+	abbr, err := st.GetByAbbr(s)
+	if err != nil {
+		return err
+	}
+	err = st.db.Unscoped().Delete(&abbr).Error
 	return err
 }
 

@@ -88,6 +88,44 @@ func (d *Datastore) CreateHandler(w http.ResponseWriter, r *http.Request) {
 	writeResponse(w, http.StatusOK, fmt.Sprintf("%s ... %s", shorty, url))
 }
 
+func (d *Datastore) DeleteHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodDelete {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	vars := mux.Vars(r)
+	shorty := vars["shorty"]
+
+	err := d.Store.Conn.Delete(shorty)
+	if err != nil {
+		log.Printf("ERROR in Delete: %v\n", err)
+		writeResponse(w, http.StatusNotFound, fmt.Sprint(err))
+		return
+	}
+	writeResponse(w, http.StatusOK, fmt.Sprintf("%s deleted", shorty))
+}
+
+func (d *Datastore) InfoHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	vars := mux.Vars(r)
+	shorty := vars["shorty"]
+
+	abbr, err := d.Store.Conn.GetByAbbr(shorty)
+	if err != nil {
+		log.Printf("ERROR in Info: %v\n", err)
+		writeResponse(w, http.StatusNotFound, fmt.Sprint(err))
+		return
+	}
+	writeResponse(w, http.StatusOK, fmt.Sprintf("%s ... %s", shorty, abbr.Url))
+}
+
 func writeResponse(w http.ResponseWriter, status int, content string) {
 	w.WriteHeader(status)
 	w.Header().Set("Content-Type", "application/json")
