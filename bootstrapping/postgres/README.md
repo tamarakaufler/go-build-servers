@@ -5,6 +5,7 @@
 \d __database__
 
 \c __database__
+
 \d __table__
 
 ## Schema
