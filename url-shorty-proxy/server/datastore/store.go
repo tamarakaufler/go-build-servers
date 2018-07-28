@@ -62,6 +62,8 @@ func DBConnection() (*gorm.DB, error) {
 	db.LogMode(true)
 	db.AutoMigrate(&Shorty{})
 
+	db.Model(&Shorty{}).AddUniqueIndex("idx_shorty_shorty", "shorty")
+
 	return db, err
 }
 
@@ -78,7 +80,7 @@ func (st *PSQLStore) Delete(s string) error {
 
 func (st *PSQLStore) Get(id uint) (*Shorty, error) {
 	var abbr Shorty
-	abbr.Id = id
+	abbr.Model.ID = id
 
 	err := st.db.First(&abbr).Error
 	return &abbr, err

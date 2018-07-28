@@ -11,7 +11,6 @@ type Datastore interface {
 
 type Shorty struct {
 	gorm.Model
-	Id          uint
 	Shorty, Url string
 }
 
