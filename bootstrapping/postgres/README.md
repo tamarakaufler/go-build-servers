@@ -58,7 +58,7 @@ If the data structure corresponding to the table contains gorm.Model, eg:
         Shorty, Url string
     }
 
-The primary key id is shorty.Model.ID. Adding an id as the struct field will result in an error message about a duplicate id and the table will not be created.
+the primary key id is shorty.Model.ID. Adding an id as the struct field will result in an error message about a duplicate id and the table will not be created.
 
 #### Without gorm AutoMigrate feature
 
