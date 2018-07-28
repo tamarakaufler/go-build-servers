@@ -65,7 +65,7 @@ main() {
   check_env_vars_set
   init_user_and_db
 
-  # Comment out if wanting to use the url-shortener-proxy to use gorm AutoMigrate feature:
+  # Comment out if wanting to use the url-shorty-proxy to use gorm AutoMigrate feature:
   #   the gorm AutoMigrate feature creates extra columns (xxx_unrecognized, xxx_sizecache)
   #   based on the proto message, which are required for proto messages transactions
   #   to work with the table

@@ -5,13 +5,13 @@ net:
 	docker network create --driver bridge url-shortener-bridge		
 
 build:
-	docker build -t quay.io/tamarakaufler/url-shortener-postgres:$(IMAGE_TAG) .
+	docker build -t quay.io/tamarakaufler/url-shorty-postgres:$(IMAGE_TAG) .
 
-localrun:
-	docker run  --name url-shortener-postgres  --network=url-shortener-bridge --rm -d -p 5432:5432 quay.io/tamarakaufler/url-shortener-postgres:$(IMAGE_TAG)
+runpostgres:
+	docker run --name url-shorty-postgres --network=url-shortener-bridge --rm -d -p 5432:5432 quay.io/tamarakaufler/url-shorty-postgres:$(IMAGE_TAG)
 
 rmdbcontainer:
 	docker ps | grep "postgres" | awk '{print $1}' | xargs docker rm -f
 
 access:
-	docker exec -it url-shortener-postgres psql -U shorty_user url_shortener
+	docker exec -it url-shorty-postgres psql -U shorty_user url_shortener
