@@ -73,7 +73,7 @@ func DBConnection() (*gorm.DB, error) {
 }
 
 func (st *PSQLStore) Create(a Shorty) error {
-	err := st.db.Create(a).Error
+	err := st.db.Create(&a).Error
 	return err
 }
 

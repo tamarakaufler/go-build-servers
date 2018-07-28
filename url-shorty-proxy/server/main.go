@@ -16,8 +16,9 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	r.HandleFunc("/", handler.NoopHandler)
-	r.HandleFunc("/{shorty}", ds.MappingHandler)
+	r.HandleFunc("/", handler.NoopHandler).Methods("GET")
+	r.HandleFunc("/{shorty}", ds.MappingHandler).Methods("GET")
+	r.HandleFunc("/{shorty}/{url}", ds.CreateHandler).Methods("POST")
 
 	log.Println("*** Starting proxy on 127.0.0.1:8888")
 	log.Fatal(http.ListenAndServe(":8888", r))

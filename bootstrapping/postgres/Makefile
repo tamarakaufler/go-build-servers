@@ -14,4 +14,4 @@ rmdbcontainer:
 	docker ps | grep "postgres" | awk '{print $1}' | xargs docker rm -f
 
 access:
-	docker exec -it url-shorty-postgres psql -U shorty_user url_shortener
+	docker exec -it url-shorty-postgres psql -U postgres url_shortener
