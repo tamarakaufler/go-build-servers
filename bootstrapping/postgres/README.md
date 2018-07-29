@@ -72,3 +72,11 @@ docker exec -it url-shorty-postgres psql -U postgres  url_shortener --command "I
 docker exec -it url-shorty-postgres psql -U shorty_user --password url_shortener --command "INSERT INTO shorties VALUES(DEFAULT,DEFAULT,DEFAULT,DEFAULT,'amzn.u', 'https://amazon.co.uk')"
 
     asks interactively for a password
+
+## Useful links
+
+https://gist.github.com/Kartones/dd3ff5ec5ea238d4c546
+
+https://www.w3resource.com/PostgreSQL/unique.php
+
+http://doc.gorm.io/crud.html#delete
