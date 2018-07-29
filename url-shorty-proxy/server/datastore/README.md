@@ -76,6 +76,10 @@ b) Access the database directly
 
 # Kubernetes
 
+TODO
+
+https://gist.github.com/nathanborror/36ebcb42472775b1aa4a8edc135ee615
+
 ## Postgres deployment
 
 https://gist.github.com/nathanborror/36ebcb42472775b1aa4a8edc135ee615

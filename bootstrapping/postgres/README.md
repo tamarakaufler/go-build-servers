@@ -80,3 +80,5 @@ https://gist.github.com/Kartones/dd3ff5ec5ea238d4c546
 https://www.w3resource.com/PostgreSQL/unique.php
 
 http://doc.gorm.io/crud.html#delete
+
+https://gist.github.com/nathanborror/36ebcb42472775b1aa4a8edc135ee615
