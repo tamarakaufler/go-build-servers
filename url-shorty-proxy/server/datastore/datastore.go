@@ -1,7 +1,5 @@
 package datastore
 
-import "github.com/jinzhu/gorm"
-
 type Datastore interface {
 	Create(Shorty) error
 	Delete(shortURL string) error
@@ -10,7 +8,6 @@ type Datastore interface {
 }
 
 type Shorty struct {
-	gorm.Model
 	Shorty, Url string
 }
 

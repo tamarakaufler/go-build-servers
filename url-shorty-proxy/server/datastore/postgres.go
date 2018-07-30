@@ -16,12 +16,17 @@ var (
 	database = "url_shortener"
 )
 
+type PSQLShorty struct {
+	gorm.Model
+	Shorty, Url string
+}
+
 type PSQLStore struct {
 	db *gorm.DB
 }
 
 func NewPSQLStore() (*Store, error) {
-	conn, err := DBConnection()
+	conn, err := psqlConnection()
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +35,7 @@ func NewPSQLStore() (*Store, error) {
 	return store, nil
 }
 
-func DBConnection() (*gorm.DB, error) {
+func psqlConnection() (*gorm.DB, error) {
 
 	// host is in the form of: localhost:5432
 	if os.Getenv("DB_HOST") != "" {
@@ -64,21 +69,21 @@ func DBConnection() (*gorm.DB, error) {
 
 	// Creates a table based on the Shorty struct. Also adds created, updated, deleted
 	// timestamps
-	db.AutoMigrate(&Shorty{})
+	db.AutoMigrate(&PSQLShorty{})
 
 	// Ensures uniqueness of the shorty column
-	db.Model(&Shorty{}).AddUniqueIndex("idx_shorty_shorty", "shorty")
+	db.Model(&PSQLShorty{}).AddUniqueIndex("idx_shorty_shorty", "shorty")
 
 	return db, err
 }
 
-func (st *PSQLStore) Create(a Shorty) error {
+func (st *PSQLStore) Create(a PSQLShorty) error {
 	err := st.db.Create(&a).Error
 	return err
 }
 
 func (st *PSQLStore) Delete(s string) error {
-	var abbr *Shorty
+	var abbr *PSQLShorty
 
 	abbr, err := st.GetByAbbr(s)
 	if err != nil {
@@ -88,16 +93,16 @@ func (st *PSQLStore) Delete(s string) error {
 	return err
 }
 
-func (st *PSQLStore) Get(id uint) (*Shorty, error) {
-	var abbr Shorty
+func (st *PSQLStore) Get(id uint) (*PSQLShorty, error) {
+	var abbr PSQLShorty
 	abbr.Model.ID = id
 
 	err := st.db.First(&abbr).Error
 	return &abbr, err
 }
 
-func (st *PSQLStore) GetByAbbr(shorty string) (*Shorty, error) {
-	var abbr Shorty
+func (st *PSQLStore) GetByAbbr(shorty string) (*PSQLShorty, error) {
+	var abbr PSQLShorty
 
 	err := st.db.First(&abbr, "shorty = ?", shorty).Error
 

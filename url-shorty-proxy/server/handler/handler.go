@@ -74,7 +74,7 @@ func (d *Datastore) CreateHandler(w http.ResponseWriter, r *http.Request) {
 	shorty := vars["shorty"]
 	url := vars["url"]
 
-	newShorty := datastore.Shorty{
+	newShorty := datastore.PSQLShorty{
 		Shorty: shorty,
 		Url:    url,
 	}
