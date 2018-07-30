@@ -39,7 +39,6 @@ POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-}
 
 # Debug ----------------------------------------------------
 echo "==> POSTGRES_USER ... $POSTGRES_USER"
-echo "==> POSTGRES_DB ... $POSTGRES_DB"
 echo "==> URL_SHORTENER_DB ... $URL_SHORTENER_DB"
 echo "==> SHORTY_DB_USER ... $SHORTY_DB_USER"
 echo "==> SHORTY_DB_PASSWORD ... [$SHORTY_DB_PASSWORD]"
