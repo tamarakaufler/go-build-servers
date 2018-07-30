@@ -8,11 +8,11 @@ import (
 	"regexp"
 
 	"github.com/gorilla/mux"
-	"github.com/tamarakaufler/go-build-servers/url-shorty-proxy/server/datastore"
+	"github.com/tamarakaufler/go-build-servers/url-shorty-proxy/server/datastore/psql"
 )
 
 type Datastore struct {
-	Store *datastore.Store
+	Store *psql.Store
 }
 
 type Response struct {
@@ -22,7 +22,7 @@ type Response struct {
 var httpRegex = regexp.MustCompile("^http(s)?://")
 
 func NewDatastore() (*Datastore, error) {
-	st, err := datastore.NewPSQLStore()
+	st, err := psql.NewPSQLStore()
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (d *Datastore) CreateHandler(w http.ResponseWriter, r *http.Request) {
 	shorty := vars["shorty"]
 	url := vars["url"]
 
-	newShorty := datastore.PSQLShorty{
+	newShorty := psql.PSQLShorty{
 		Shorty: shorty,
 		Url:    url,
 	}

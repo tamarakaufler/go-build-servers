@@ -10,7 +10,3 @@ type Datastore interface {
 type Shorty struct {
 	Shorty, Url string
 }
-
-type Store struct {
-	Conn PSQLStore
-}

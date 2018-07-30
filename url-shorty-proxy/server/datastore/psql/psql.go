@@ -1,4 +1,4 @@
-package datastore
+package psql
 
 import (
 	"fmt"
@@ -23,6 +23,10 @@ type PSQLShorty struct {
 
 type PSQLStore struct {
 	db *gorm.DB
+}
+
+type Store struct {
+	Conn PSQLStore
 }
 
 func NewPSQLStore() (*Store, error) {

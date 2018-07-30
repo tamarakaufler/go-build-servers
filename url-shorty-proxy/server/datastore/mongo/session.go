@@ -20,7 +20,11 @@ type MGOStore struct {
 	collection *mgo.Collection
 }
 
-func NewMGOStore() (*MGOStore, error) {
+type Store struct {
+	Conn MGOStore
+}
+
+func NewMGOStore() (*Store, error) {
 
 	// host is in the form of: localhost:21017
 	if os.Getenv("DB_HOST") != "" {
@@ -55,15 +59,15 @@ func NewMGOStore() (*MGOStore, error) {
 		Sparse:     true,
 	})
 
-	mgoStore := &MGOStore{
+	mgoStore := MGOStore{
 		session:    sess,
 		collection: coll,
 	}
-	// store := &datastore.Store{
-	// 	Conn: mgoStore,
-	// }
+	store := &Store{
+		Conn: mgoStore,
+	}
 
-	return mgoStore, nil
+	return store, nil
 }
 
 func (s *MGOStore) Copy() *mgo.Session {
