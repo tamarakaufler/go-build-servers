@@ -13,7 +13,7 @@ build:
 	docker build -t quay.io/tamarakaufler/url-shorty-mongodb:$(IMAGE_TAG) .
 
 runmongodb:
-	docker run --name url-shorty-mongodb --network=url-shortener-bridge  -v $(PWD)/dbdata:/data/db --rm -d -p 27017:27017 quay.io/tamarakaufler/url-shorty-mongodb:$(IMAGE_TAG) --auth
+	docker run --name url-shorty-mongodb --network=url-shortener-bridge  -v $(PWD)/mgodata:/data/db --rm -d -p 27017:27017 quay.io/tamarakaufler/url-shorty-mongodb:$(IMAGE_TAG) --auth
 
 rmdbcontainer:
 	docker ps | grep "mongodb" | awk '{print $1}' | xargs docker rm -f
