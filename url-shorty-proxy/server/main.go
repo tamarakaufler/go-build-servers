@@ -19,7 +19,7 @@ func main() {
 	}
 
 	r.HandleFunc("/", ds.NoopHandler).Methods("GET")
-	r.HandleFunc("/all", ds.GetAllHandler).Methods("GET")
+	r.HandleFunc("/list", ds.GetAllHandler).Methods("GET")
 	r.HandleFunc("/{shorty}", ds.MappingHandler).Methods("GET")
 	r.HandleFunc("/{shorty}/{url}", ds.CreateHandler).Methods("POST")
 	r.HandleFunc("/{shorty}", ds.DeleteHandler).Methods("DELETE")
