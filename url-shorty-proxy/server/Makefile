@@ -1,6 +1,7 @@
 IMAGE_TAG=v1alpha1
 QUAY_PASS?=biggestsecret
-DB_HOST?=url-shorty-postgres:5432
+#DB_HOST?=url-shorty-postgres:5432
+DB_HOST?=url-shorty-postgres:27017
 	
 dev:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o url-shorty-proxy -a -installsuffix cgo main.go

@@ -3,6 +3,7 @@ package mongo
 import (
 	"log"
 	"os"
+	"time"
 
 	"gopkg.in/mgo.v2"
 )
@@ -15,16 +16,16 @@ var (
 	collection = "shorties"
 )
 
-type MGOStore struct {
-	session    *mgo.Session
-	collection *mgo.Collection
-}
-
 type Store struct {
 	Conn MGOStore
 }
 
-func NewMGOStore() (*Store, error) {
+type MGOStore struct {
+	session              *mgo.Session
+	database, collection string
+}
+
+func NewMGOStore(logger *log.Logger) (*Store, error) {
 
 	// host is in the form of: localhost:21017
 	if os.Getenv("DB_HOST") != "" {
@@ -45,41 +46,49 @@ func NewMGOStore() (*Store, error) {
 
 	log.Printf("Connecting to database using: %s - %s - %s - %s\n", host, database, user, password)
 
-	sess, err := mgo.Dial(host)
+	//mgo.SetDebug(true)
+	mgo.SetLogger(logger)
+
+	// To establish an authenticated session to the database.
+	// Provides cluster info.
+	connInfo := &mgo.DialInfo{
+		Addrs:    []string{host},
+		Timeout:  60 * time.Second,
+		Database: database,
+		Username: user,
+		Password: password,
+	}
+
+	// Create a session which maintains a pool of socket connections
+	// to MongoDB cluster (Addrs)
+	db, err := mgo.DialWithInfo(connInfo)
 	if err != nil {
 		return nil, err
 	}
 
-	coll := sess.DB(database).C(collection)
-	coll.EnsureIndex(mgo.Index{
+	// Read from a slave if possible
+	db.SetMode(mgo.Monotonic, true)
+
+	// Create an index on the most searched field
+	shortiesIndex := mgo.Index{
 		Key:        []string{"shorty"},
 		Unique:     true,
 		DropDups:   true,
 		Background: true,
 		Sparse:     true,
-	})
+	}
+	err = db.DB(database).C(collection).EnsureIndex(shortiesIndex)
+	if err != nil {
+		return nil, err
+	}
 
 	mgoStore := MGOStore{
-		session:    sess,
-		collection: coll,
+		session:    db,
+		database:   database,
+		collection: collection,
 	}
 	store := &Store{
 		Conn: mgoStore,
 	}
-
 	return store, nil
-}
-
-func (s *MGOStore) Copy() *mgo.Session {
-	return s.session.Copy()
-}
-
-func (s *MGOStore) GetCollection(db string, col string) *mgo.Collection {
-	return s.session.DB(db).C(col)
-}
-
-func (s *MGOStore) Close() {
-	if s.session != nil {
-		s.session.Close()
-	}
 }

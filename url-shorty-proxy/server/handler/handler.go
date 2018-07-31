@@ -8,11 +8,13 @@ import (
 	"regexp"
 
 	"github.com/gorilla/mux"
-	"github.com/tamarakaufler/go-build-servers/url-shorty-proxy/server/datastore/psql"
+	//"github.com/tamarakaufler/go-build-servers/url-shorty-proxy/server/datastore/psql"
+	"github.com/tamarakaufler/go-build-servers/url-shorty-proxy/server/datastore/mongo"
 )
 
 type Datastore struct {
-	Store *psql.Store
+	Store  *mongo.Store
+	logger *log.Logger
 }
 
 type Response struct {
@@ -21,12 +23,15 @@ type Response struct {
 
 var httpRegex = regexp.MustCompile("^http(s)?://")
 
-func NewDatastore() (*Datastore, error) {
-	st, err := psql.NewPSQLStore()
+func NewDatastore(logger *log.Logger) (*Datastore, error) {
+	st, err := mongo.NewMGOStore(logger)
 	if err != nil {
 		return nil, err
 	}
-	return &Datastore{Store: st}, nil
+	return &Datastore{
+		Store:  st,
+		logger: logger,
+	}, nil
 }
 
 func (d *Datastore) MappingHandler(w http.ResponseWriter, r *http.Request) {
@@ -41,26 +46,26 @@ func (d *Datastore) MappingHandler(w http.ResponseWriter, r *http.Request) {
 
 	abbr, err := d.Store.Conn.GetByAbbr(shorty)
 	if err != nil {
-		log.Printf("ERROR in GetByAbb: %v\n", err)
-		writeResponse(w, http.StatusNotFound, "Record not found")
+		d.logger.Printf("ERROR in GetByAbb: %v\n", err)
+		writeResponse(d.logger, w, http.StatusNotFound, "Record not found")
 		return
 	}
 
-	log.Printf("shorty: %s => url: %s\n", shorty, abbr.Url)
+	d.logger.Printf("shorty: %s => url: %s\n", shorty, abbr.Url)
 
 	if !httpRegex.MatchString(abbr.Url) {
 		abbr.Url = "http://" + abbr.Url
 	}
 
 	//log.Printf("abbr: %#v\n", abbr)
-	log.Printf("shorty: %s => url: %s\n", shorty, abbr.Url)
+	d.logger.Printf("shorty: %s => url: %s\n", shorty, abbr.Url)
 
 	http.Redirect(w, r, abbr.Url, http.StatusMovedPermanently)
 }
 
-func NoopHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("In NoopHandler")
-	writeResponse(w, http.StatusOK, "Nothing to do here")
+func (d *Datastore) NoopHandler(w http.ResponseWriter, r *http.Request) {
+	d.logger.Println("In NoopHandler")
+	writeResponse(d.logger, w, http.StatusOK, "Nothing to do here")
 }
 
 func (d *Datastore) CreateHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,18 +79,18 @@ func (d *Datastore) CreateHandler(w http.ResponseWriter, r *http.Request) {
 	shorty := vars["shorty"]
 	url := vars["url"]
 
-	newShorty := psql.PSQLShorty{
+	newShorty := mongo.MGOShorty{
 		Shorty: shorty,
 		Url:    url,
 	}
 
 	err := d.Store.Conn.Create(newShorty)
 	if err != nil {
-		log.Printf("ERROR in Create: %v\n", err)
-		writeResponse(w, http.StatusOK, fmt.Sprint(err))
+		d.logger.Printf("ERROR in Create: %v\n", err)
+		writeResponse(d.logger, w, http.StatusOK, fmt.Sprint(err))
 		return
 	}
-	writeResponse(w, http.StatusOK, fmt.Sprintf("%s ... %s", shorty, url))
+	writeResponse(d.logger, w, http.StatusOK, fmt.Sprintf("%s ... %s", shorty, url))
 }
 
 func (d *Datastore) DeleteHandler(w http.ResponseWriter, r *http.Request) {
@@ -100,11 +105,11 @@ func (d *Datastore) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := d.Store.Conn.Delete(shorty)
 	if err != nil {
-		log.Printf("ERROR in Delete: %v\n", err)
-		writeResponse(w, http.StatusNotFound, fmt.Sprint(err))
+		d.logger.Printf("ERROR in Delete: %v\n", err)
+		writeResponse(d.logger, w, http.StatusNotFound, fmt.Sprint(err))
 		return
 	}
-	writeResponse(w, http.StatusOK, fmt.Sprintf("%s deleted", shorty))
+	writeResponse(d.logger, w, http.StatusOK, fmt.Sprintf("%s deleted", shorty))
 }
 
 func (d *Datastore) InfoHandler(w http.ResponseWriter, r *http.Request) {
@@ -119,14 +124,32 @@ func (d *Datastore) InfoHandler(w http.ResponseWriter, r *http.Request) {
 
 	abbr, err := d.Store.Conn.GetByAbbr(shorty)
 	if err != nil {
-		log.Printf("ERROR in Info: %v\n", err)
-		writeResponse(w, http.StatusNotFound, fmt.Sprint(err))
+		d.logger.Printf("ERROR in Info: %v\n", err)
+		writeResponse(d.logger, w, http.StatusNotFound, fmt.Sprint(err))
 		return
 	}
-	writeResponse(w, http.StatusOK, fmt.Sprintf("%s ... %s", shorty, abbr.Url))
+	writeResponse(d.logger, w, http.StatusOK, fmt.Sprintf("%s ... %s", shorty, abbr.Url))
 }
 
-func writeResponse(w http.ResponseWriter, status int, content string) {
+func (d *Datastore) GetAllHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	abbrs, err := d.Store.Conn.GetAll()
+	if err != nil {
+		d.logger.Printf("ERROR in Info: %v\n", err)
+		writeResponse(d.logger, w, http.StatusNotFound, fmt.Sprint(err))
+		return
+	}
+	writeResponse(d.logger, w, http.StatusOK, fmt.Sprintf("%+v", abbrs))
+}
+
+// Helper functions and methods -----------------------------------------------------------
+
+func writeResponse(logger *log.Logger, w http.ResponseWriter, status int, content string) {
 	w.WriteHeader(status)
 	w.Header().Set("Content-Type", "application/json")
 	resp := Response{
@@ -136,6 +159,6 @@ func writeResponse(w http.ResponseWriter, status int, content string) {
 
 	err := json.NewEncoder(w).Encode(resp)
 	if err != nil {
-		log.Printf("could not encode response: %v", err)
+		logger.Printf("could not encode response: %v", err)
 	}
 }

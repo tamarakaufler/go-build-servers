@@ -10,29 +10,47 @@ type MGOShorty struct {
 }
 
 func (st *MGOStore) Create(a MGOShorty) error {
-	return st.collection.Insert(&a)
+	sess := st.session.Copy()
+	defer sess.Close()
+
+	return sess.DB(st.database).C(st.collection).Insert(&a)
 }
 
-func (st *MGOStore) Delete(s string) error {
-	var abbr *MGOShorty
+func (st *MGOStore) Delete(shorty string) error {
+	sess := st.session.Copy()
+	defer sess.Close()
 
-	abbr, err := st.GetByAbbr(s)
-	if err != nil {
-		return err
-	}
-	return st.collection.Remove(&abbr)
+	return sess.DB(st.database).C(st.collection).Remove(bson.M{"shorty": shorty})
 }
 
 func (st *MGOStore) Get(id string) (*MGOShorty, error) {
+	sess := st.session.Copy()
+	defer sess.Close()
+
 	var abbr MGOShorty
 
-	err := st.collection.FindId(bson.ObjectIdHex(id)).One(&abbr)
+	err := sess.DB(st.database).C(st.collection).FindId(bson.ObjectIdHex(id)).One(&abbr)
 	return &abbr, err
 }
 
 func (st *MGOStore) GetByAbbr(shorty string) (*MGOShorty, error) {
+	sess := st.session.Copy()
+	defer sess.Close()
+
 	var abbr MGOShorty
 
-	err := st.collection.Find(bson.M{"shorty": shorty}).One(&abbr)
+	err := sess.DB(st.database).C(st.collection).Find(bson.M{"shorty": shorty}).One(&abbr)
 	return &abbr, err
+}
+
+func (st *MGOStore) GetAll() ([]MGOShorty, error) {
+	sess := st.session.Copy()
+	defer sess.Close()
+
+	var abbrs []MGOShorty
+
+	err := sess.DB(st.database).C(st.collection).Find(nil).Sort("shorty").All(&abbrs)
+
+	return abbrs, err
+
 }
