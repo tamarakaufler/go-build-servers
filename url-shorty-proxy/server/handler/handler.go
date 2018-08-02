@@ -8,8 +8,12 @@ import (
 	"regexp"
 
 	"github.com/gorilla/mux"
+
+	// Implementation for two datastores, Postgres and MongoDB. To swap, replace 'psql' with
+	// 'mongo' and 'PSQL' with 'MGO'. Bootstrapping of the databases is provided in
+	// repo_root/bootstrapping dir
 	"github.com/tamarakaufler/go-build-servers/url-shorty-proxy/server/datastore/psql"
-	//"github.com/tamarakaufler/go-build-servers/url-shorty-proxy/server/datastore/psql"
+	//"github.com/tamarakaufler/go-build-servers/url-shorty-proxy/server/datastore/mongo"
 )
 
 type Datastore struct {

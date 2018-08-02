@@ -3,6 +3,9 @@ The proxy translates a URL shortcut into its full real world equivalent. The map
 
 The databases run in a container and are bootstrapped for use with the url-shorty-proxy (see https://github.com/tamarakaufler/go-build-servers/tree/master/bootstrapping).
 
+To swap one datastore for another, make a change in the handler.go. To make a swap, replace 'psql' with
+'mongo' and 'PSQL' with 'MGO', and visa versa.
+
 ## Usage
 a) Run a datastore where the short URL/full URL mappings are stored
 b) Run the proxy, either directly or in a container
